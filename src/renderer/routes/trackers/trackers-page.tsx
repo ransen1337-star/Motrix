@@ -11,6 +11,7 @@ import {
   TabsTrigger,
 } from '@renderer/components/ui/tabs'
 import { useSyncTrackers } from '@renderer/hooks/use-sync-trackers'
+import { useInterfaceAnimationsEnabled } from '@renderer/lib/interface-animations'
 import { cn } from '@renderer/lib/utils'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +23,7 @@ export function TrackersPage() {
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [tab, setTab] = useState<'effective' | 'blacklist'>('effective')
+  const interfaceAnimationsEnabled = useInterfaceAnimationsEnabled()
   const { sync, isSyncing, status, error } = useSyncTrackers()
   const syncMessage = isSyncing
     ? status === 'probing'
@@ -95,7 +97,7 @@ export function TrackersPage() {
         className="flex min-h-0 min-w-0 flex-1"
       >
         <TabsList className="relative isolate shrink-0 bg-tab-background">
-          <TabsIndicator />
+          <TabsIndicator animated={interfaceAnimationsEnabled} />
           <TabsTrigger
             value="effective"
             className="relative z-10 data-active:bg-transparent group-data-[variant=default]/tabs-list:data-active:bg-transparent group-data-[variant=default]/tabs-list:data-active:shadow-none dark:data-active:bg-transparent"
