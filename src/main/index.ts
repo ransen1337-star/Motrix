@@ -452,11 +452,6 @@ const settingsManager = new SettingsManager(settingsPath, {
         structuredClone(updated.app.directoryPreferences)
       )
     }
-    if (old.app.interfaceAnimations !== updated.app.interfaceAnimations) {
-      eventBus.emit(Events.InterfaceAnimationsChanged, {
-        interfaceAnimations: updated.app.interfaceAnimations,
-      })
-    }
     if (old.app.reduceMotion !== updated.app.reduceMotion) {
       eventBus.emit(Events.ReducedMotionChanged, {
         reduceMotion: updated.app.reduceMotion,

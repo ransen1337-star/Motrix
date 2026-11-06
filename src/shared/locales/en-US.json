@@ -1357,8 +1357,6 @@
       "trayIconColorLight": "Light icon (dark panel)",
       "trayIconColorDark": "Dark icon (light panel)",
       "reduceMotion": "Reduce motion",
-      "interfaceAnimations": "Animation effects",
-      "interfaceAnimationsDesc": "Animate page changes, sidebar selection, and dialogs.",
       "reduceMotionDesc": "Use fewer animations throughout the app.",
       "hardwareAcceleration": "Hardware acceleration",
       "hardwareAccelerationDesc": "Use your graphics card for smoother visuals. Turn this off if the window flickers or Motrix crashes. Changes take effect after restarting Motrix.",

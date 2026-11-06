@@ -1385,8 +1385,6 @@
       "trayIconColorLight": "Jasna ikona (ciemny panel)",
       "trayIconColorDark": "Ciemna ikona (jasny panel)",
       "reduceMotion": "Ogranicz ruch",
-      "interfaceAnimations": "Efekty animacji",
-      "interfaceAnimationsDesc": "Animuj zmiany stron, zaznaczenie na pasku bocznym i okna dialogowe.",
       "reduceMotionDesc": "Używaj mniej animacji w aplikacji.",
       "hardwareAcceleration": "Przyspieszenie sprzętowe",
       "hardwareAccelerationDesc": "Używa karty graficznej do płynniejszego wyświetlania. Wyłącz, jeśli okno migocze lub Motrix się zawiesza. Zmiany zaczną działać po ponownym uruchomieniu Motrix.",

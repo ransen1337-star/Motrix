@@ -1884,8 +1884,6 @@
       "liquidGlassEffectMacDesc": "Geldt ook voor het venster op macOS 26 en nieuwer. Het venster wordt opnieuw geopend bij een wijziging.",
       "menuBar": "Menubalk",
       "reduceMotion": "Beweging verminderen",
-      "interfaceAnimations": "Animatie-effecten",
-      "interfaceAnimationsDesc": "Animeer paginawissels, de selectie in de zijbalk en dialoogvensters.",
       "reduceMotionDesc": "Minder animaties in de hele app gebruiken.",
       "hardwareAcceleration": "Hardwareversnelling",
       "hardwareAccelerationDesc": "Gebruikt de grafische kaart voor een vloeiendere weergave. Schakel dit uit als het venster flikkert of Motrix vastloopt. Wijzigingen gelden na het herstarten van Motrix.",

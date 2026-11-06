@@ -61,7 +61,6 @@ type AppearanceFields = Pick<
   MotrixAppSettings,
   | 'theme'
   | 'sidebarColor'
-  | 'interfaceAnimations'
   | 'reduceMotion'
   | 'hardwareAcceleration'
   | 'language'
@@ -78,7 +77,6 @@ type AppearanceFields = Pick<
 const DEFAULTS: AppearanceFields = {
   theme: DEFAULT_APP_SETTINGS.theme,
   sidebarColor: DEFAULT_APP_SETTINGS.sidebarColor,
-  interfaceAnimations: DEFAULT_APP_SETTINGS.interfaceAnimations,
   reduceMotion: DEFAULT_APP_SETTINGS.reduceMotion,
   hardwareAcceleration: DEFAULT_APP_SETTINGS.hardwareAcceleration,
   language: DEFAULT_APP_SETTINGS.language,
@@ -116,8 +114,6 @@ export function AppearanceDialog({
       form.reset({
         theme: all.app.theme,
         sidebarColor: all.app.sidebarColor ?? DEFAULTS.sidebarColor,
-        interfaceAnimations:
-          all.app.interfaceAnimations ?? DEFAULTS.interfaceAnimations,
         reduceMotion: all.app.reduceMotion ?? DEFAULTS.reduceMotion,
         hardwareAcceleration:
           all.app.hardwareAcceleration ?? DEFAULTS.hardwareAcceleration,
@@ -312,28 +308,6 @@ export function AppearanceDialog({
                               disabled={
                                 !load.ready || form.formState.isSubmitting
                               }
-                            />
-                          </FormControl>
-                        </SettingsFormRow>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="interfaceAnimations"
-                      render={({ field }) => (
-                        <SettingsFormRow>
-                          <div className="space-y-1">
-                            <FormLabel>
-                              {t('settings.appearance.interfaceAnimations')}
-                            </FormLabel>
-                            <FormDescription className="text-xs">
-                              {t('settings.appearance.interfaceAnimationsDesc')}
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
                             />
                           </FormControl>
                         </SettingsFormRow>

@@ -1371,8 +1371,6 @@
       "trayIconColorLight": "Icona chiara (pannello scuro)",
       "trayIconColorDark": "Icona scura (pannello chiaro)",
       "reduceMotion": "Riduci movimento",
-      "interfaceAnimations": "Effetti di animazione",
-      "interfaceAnimationsDesc": "Anima i cambi pagina, la selezione nella barra laterale e le finestre di dialogo.",
       "reduceMotionDesc": "Usa meno animazioni nell’app.",
       "hardwareAcceleration": "Accelerazione hardware",
       "hardwareAccelerationDesc": "Usa la scheda grafica per una visualizzazione più fluida. Disattivala se la finestra sfarfalla o Motrix si arresta. Le modifiche si applicano dopo il riavvio di Motrix.",

@@ -1903,8 +1903,6 @@
       "liquidGlassEffectMacDesc": "També s'aplica a la finestra al macOS 26 o posterior. La finestra es torna a obrir quan es canvia.",
       "menuBar": "Barra de menús",
       "reduceMotion": "Reduir el moviment",
-      "interfaceAnimations": "Efectes d’animació",
-      "interfaceAnimationsDesc": "Anima els canvis de pàgina, la selecció de la barra lateral i els diàlegs.",
       "reduceMotionDesc": "Utilitza menys animacions a tota l'aplicació.",
       "hardwareAcceleration": "Acceleració per maquinari",
       "hardwareAccelerationDesc": "Utilitza la targeta gràfica per mostrar la interfície amb més fluïdesa. Desactiva-la si la finestra parpelleja o el Motrix es tanca inesperadament. Els canvis s’apliquen en reiniciar el Motrix.",

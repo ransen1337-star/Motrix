@@ -1,5 +1,4 @@
 import { ByteUnitSync } from '@renderer/components/byte-unit-sync'
-import { InterfaceAnimationsSync } from '@renderer/components/interface-animations-sync'
 import { LanguageSync } from '@renderer/components/language-sync'
 import { LocaleDirectionProvider } from '@renderer/components/locale-direction-provider'
 import { OperatorUnlockGate } from '@renderer/components/operator-unlock-gate'
@@ -71,7 +70,6 @@ function Root({
       <LocaleDirectionProvider>
         {syncSettings && <ThemeSync />}
         {syncSettings && <ByteUnitSync />}
-        <InterfaceAnimationsSync syncSettings={syncSettings} />
         <ReducedMotionSync syncSettings={syncSettings} />
         <LanguageSync windowId={windowId} />
         <WindowControlsOverlayProvider>

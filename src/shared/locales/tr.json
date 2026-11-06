@@ -1357,8 +1357,6 @@
       "trayIconColorLight": "Açık simge (koyu panel)",
       "trayIconColorDark": "Koyu simge (açık panel)",
       "reduceMotion": "Hareketi azalt",
-      "interfaceAnimations": "Animasyon efektleri",
-      "interfaceAnimationsDesc": "Sayfa değişimlerini, kenar çubuğu seçimini ve iletişim kutularını hareketli göster.",
       "reduceMotionDesc": "Uygulama genelinde daha az animasyon kullanın.",
       "hardwareAcceleration": "Donanım hızlandırma",
       "hardwareAccelerationDesc": "Daha akıcı görüntü için ekran kartını kullanır. Pencere titriyorsa veya Motrix çöküyorsa kapatın. Değişiklikler Motrix yeniden başlatılınca uygulanır.",

@@ -1343,8 +1343,6 @@
       "trayIconColorLight": "Ikon terang (panel gelap)",
       "trayIconColorDark": "Ikon gelap (panel terang)",
       "reduceMotion": "Kurangi gerakan",
-      "interfaceAnimations": "Efek animasi",
-      "interfaceAnimationsDesc": "Animasikan perubahan halaman, pilihan bilah samping, dan dialog.",
       "reduceMotionDesc": "Gunakan lebih sedikit animasi dalam aplikasi.",
       "hardwareAcceleration": "Akselerasi perangkat keras",
       "hardwareAccelerationDesc": "Menggunakan kartu grafis agar tampilan lebih lancar. Matikan jika jendela berkedip atau Motrix berhenti mendadak. Perubahan berlaku setelah Motrix dimulai ulang.",

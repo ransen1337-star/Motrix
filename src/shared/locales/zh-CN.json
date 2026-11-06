@@ -1343,8 +1343,6 @@
       "trayIconColorLight": "浅色图标（深色面板）",
       "trayIconColorDark": "深色图标（浅色面板）",
       "reduceMotion": "减少动画",
-      "interfaceAnimations": "动画效果",
-      "interfaceAnimationsDesc": "控制页面切换、侧栏选中和弹窗动画。",
       "reduceMotionDesc": "减少界面中的动态效果。",
       "hardwareAcceleration": "硬件加速",
       "hardwareAccelerationDesc": "使用显卡让界面显示更流畅。如果出现闪屏或闪退，可以尝试关闭。修改后需重启 Motrix 才会生效。",

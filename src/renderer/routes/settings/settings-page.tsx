@@ -1,5 +1,5 @@
 import { PanelShell } from '@renderer/components/desktop-kit/panel/panel-shell'
-import { useInterfaceAnimationsEnabled } from '@renderer/lib/interface-animations'
+import { useReducedMotion } from '@renderer/lib/reduced-motion'
 import { transport } from '@renderer/lib/transport'
 import { cn } from '@renderer/lib/utils'
 import { useEffect, useState } from 'react'
@@ -12,7 +12,7 @@ export function SettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const interfaceAnimationsEnabled = useInterfaceAnimationsEnabled()
+  const reducedMotion = useReducedMotion()
   const visible = /^\/settings(?:\/|$)/.test(location.pathname)
   const { cardId } = useParams<{ cardId: string }>()
   const activeCard = findCard(cardId)
@@ -22,7 +22,7 @@ export function SettingsPage() {
 
   const closeDialog = () => {
     if (!cardId) return
-    if (interfaceAnimationsEnabled) setClosingCardId(cardId)
+    if (!reducedMotion) setClosingCardId(cardId)
     else navigate('/settings')
   }
   const finishClose = () => {
@@ -32,8 +32,8 @@ export function SettingsPage() {
     if (!cardId) setClosingCardId(null)
   }, [cardId])
   useEffect(() => {
-    if (closingCardId && !interfaceAnimationsEnabled) navigate('/settings')
-  }, [closingCardId, interfaceAnimationsEnabled, navigate])
+    if (closingCardId && reducedMotion) navigate('/settings')
+  }, [closingCardId, reducedMotion, navigate])
 
   return (
     <PanelShell
