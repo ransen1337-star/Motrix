@@ -166,14 +166,8 @@ describe('AppSidebar', () => {
     const trackers = screen.getByText('Trackers').closest('a')
     expect(trackers?.getAttribute('aria-current')).toBe('page')
     expect(
-      trackers?.querySelector('[data-slot="sidebar-menu-button-active"]')
-    ).not.toBeNull()
-    expect(
-      screen
-        .getByText('Dashboard')
-        .closest('a')
-        ?.querySelector('[data-slot="sidebar-menu-button-active"]')
-    ).toBeNull()
+      document.querySelectorAll('[data-slot="sidebar-selection"]')
+    ).toHaveLength(1)
   })
 
   it('renders the Notifications entry before a separator before Settings in the footer', () => {

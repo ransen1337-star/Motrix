@@ -18,7 +18,6 @@ import {
   TooltipTrigger,
 } from '@renderer/components/ui/tooltip'
 import { useIsMobile } from '@renderer/hooks/use-mobile'
-import { getReducedMotion } from '@renderer/lib/reduced-motion'
 import { cn } from '@renderer/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
@@ -29,7 +28,6 @@ const SIDEBAR_WIDTH = '12.5rem'
 const SIDEBAR_WIDTH_MOBILE = '18rem'
 const SIDEBAR_WIDTH_ICON = '3rem'
 const SIDEBAR_KEYBOARD_SHORTCUT = 'b'
-let previousActiveRect: DOMRect | null = null
 
 type SidebarContextProps = {
   state: 'expanded' | 'collapsed'
@@ -546,62 +544,6 @@ function SidebarMenuButton({
   tooltip?: string | React.ComponentProps<typeof TooltipContent>
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar()
-  const { children, ...buttonProps } = props
-  const activeLayerRef = React.useRef<HTMLSpanElement>(null)
-
-  React.useLayoutEffect(() => {
-    const activeLayer = activeLayerRef.current
-    if (!isActive || !activeLayer) return
-
-    const rect = activeLayer.getBoundingClientRect()
-    const previous = previousActiveRect
-    previousActiveRect = rect
-    if (
-      !previous ||
-      rect.width <= 0 ||
-      rect.height <= 0 ||
-      previous.width <= 0 ||
-      previous.height <= 0 ||
-      getReducedMotion() ||
-      typeof activeLayer.animate !== 'function'
-    )
-      return
-
-    // Move the active fill directly; document-level transitions can be
-    // cancelled by unrelated updates.
-    const scaleX = previous.width / rect.width
-    const scaleY = previous.height / rect.height
-    const translateX = previous.left - rect.left
-    const translateY = previous.top - rect.top
-    if (
-      Math.abs(translateX) < 0.5 &&
-      Math.abs(translateY) < 0.5 &&
-      Math.abs(scaleX - 1) < 0.01 &&
-      Math.abs(scaleY - 1) < 0.01
-    )
-      return
-
-    const animation = activeLayer.animate(
-      [
-        {
-          transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scaleX}, ${scaleY})`,
-        },
-        { transform: 'translate3d(0, 0, 0) scale(1, 1)' },
-      ],
-      {
-        duration: 220,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-      }
-    )
-    animation.onfinish = () => animation.cancel()
-  }, [isActive])
-
-  React.useLayoutEffect(() => {
-    const activeLayer = activeLayerRef.current
-    if (isActive && activeLayer) {
-      previousActiveRect = activeLayer.getBoundingClientRect()
-    }
-  })
 
   const button = useRender({
     defaultTagName: 'button',
@@ -614,21 +556,8 @@ function SidebarMenuButton({
         'data-size': size,
         'data-active': isActive,
         className: cn(sidebarMenuButtonVariants({ variant, size }), className),
-        children: (
-          <>
-            {isActive && (
-              <span
-                ref={activeLayerRef}
-                aria-hidden="true"
-                data-slot="sidebar-menu-button-active"
-                className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-sidebar-active"
-              />
-            )}
-            {children}
-          </>
-        ),
       } as React.ComponentProps<'button'>,
-      buttonProps
+      props
     ),
   })
 

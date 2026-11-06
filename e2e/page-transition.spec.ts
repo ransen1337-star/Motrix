@@ -27,9 +27,7 @@ function observeTransitionAnimations(page: Page) {
           sidebarAnimations = Math.max(
             sidebarAnimations,
             document
-              .querySelector<HTMLElement>(
-                '[data-slot="sidebar-menu-button-active"]'
-              )
+              .querySelector<HTMLElement>('[data-slot="sidebar-selection"]')
               ?.getAnimations().length ?? 0
           )
           for (const animation of document.getAnimations()) {
@@ -74,9 +72,7 @@ test('page navigation direction follows sidebar order', async ({
   expect(transitions.inset).toContain('background-color')
   expect(transitions.inset).toContain('box-shadow')
   await expect(
-    mainWindow.locator(
-      '[data-slot="sidebar-menu-button"][data-active="true"] [data-slot="sidebar-menu-button-active"]'
-    )
+    mainWindow.locator('[data-slot="sidebar-selection"]')
   ).toHaveCount(1)
 
   await mainWindow.getByRole('link', { name: 'Downloads', exact: true }).click()

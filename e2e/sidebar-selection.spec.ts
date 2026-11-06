@@ -30,6 +30,39 @@ test('inactive sidebar hover shade fades in and out', async ({
   await expect.poll(backgroundAlpha).toBe(0)
 })
 
+test('active sidebar fill slides from the previous item to the target', async ({
+  mainWindow,
+}) => {
+  const indicator = mainWindow.locator('[data-slot="sidebar-selection"]')
+  await mainWindow.getByRole('link', { name: 'Dashboard', exact: true }).click()
+  await mainWindow.waitForTimeout(350)
+  const start = await indicator.evaluate(
+    (element) => element.getBoundingClientRect().top
+  )
+
+  const sampled = mainWindow.evaluate(
+    () =>
+      new Promise<number[]>((resolve) => {
+        const tops: number[] = []
+        const deadline = performance.now() + 400
+        const sample = () => {
+          const element = document.querySelector<HTMLElement>(
+            '[data-slot="sidebar-selection"]'
+          )
+          if (element) tops.push(element.getBoundingClientRect().top)
+          if (performance.now() < deadline) requestAnimationFrame(sample)
+          else resolve(tops)
+        }
+        sample()
+      })
+  )
+
+  await mainWindow.getByRole('link', { name: 'Trackers', exact: true }).click()
+  const tops = await sampled
+  expect(new Set(tops.map((top) => Math.round(top))).size).toBeGreaterThan(2)
+  expect(tops.at(-1) ?? start).toBeGreaterThan(start + 20)
+})
+
 for (const platform of ['win32', 'linux', 'darwin']) {
   test(`sidebar selection remains distinct across the gradient (${platform} CSS)`, async ({
     mainWindow,
@@ -69,8 +102,8 @@ for (const platform of ['win32', 'linux', 'darwin']) {
           await link.click()
           await mainWindow.mouse.move(500, 45)
           await expect(button).toHaveAttribute('data-active', 'true')
-          const activeLayer = button.locator(
-            '[data-slot="sidebar-menu-button-active"]'
+          const activeLayer = mainWindow.locator(
+            '[data-slot="sidebar-selection"]'
           )
           const background = await activeLayer.evaluate(
             (element) => getComputedStyle(element).backgroundColor
