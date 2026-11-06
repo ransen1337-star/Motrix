@@ -23,6 +23,7 @@ export const generalFormSchema = appSettingsInputSchema.pick({
 export const appearanceFormSchema = appSettingsInputSchema.pick({
   theme: true,
   sidebarColor: true,
+  pageTransitions: true,
   reduceMotion: true,
   hardwareAcceleration: true,
   language: true,

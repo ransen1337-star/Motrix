@@ -1343,6 +1343,8 @@
       "trayIconColorLight": "밝은 아이콘(어두운 패널용)",
       "trayIconColorDark": "어두운 아이콘(밝은 패널용)",
       "reduceMotion": "동작 줄이기",
+      "pageTransitions": "페이지 전환",
+      "pageTransitionsDesc": "페이지 변경과 사이드바 선택 이동에 애니메이션을 적용합니다.",
       "reduceMotionDesc": "앱 전체에서 애니메이션 사용을 줄입니다.",
       "hardwareAcceleration": "하드웨어 가속",
       "hardwareAccelerationDesc": "그래픽 카드를 사용해 화면을 더 부드럽게 표시합니다. 화면이 깜박이거나 Motrix가 종료되면 꺼 보세요. 변경 사항은 Motrix를 다시 시작한 후 적용됩니다.",

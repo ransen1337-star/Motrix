@@ -23,6 +23,7 @@ import { useNotificationToasts } from '@renderer/hooks/use-notification-toasts'
 import { useSidebarColor } from '@renderer/hooks/use-sidebar-color'
 import { useToastEvents } from '@renderer/hooks/use-toast-events'
 import { useWindowTorrentDrop } from '@renderer/hooks/use-window-torrent-drop'
+import { usePageTransitionsEnabled } from '@renderer/lib/page-transitions'
 import { useReducedMotion } from '@renderer/lib/reduced-motion'
 import { cn } from '@renderer/lib/utils'
 import { electronServices } from '@renderer/platform/electron-services'
@@ -76,6 +77,7 @@ export function AppLayout() {
   useEngineRestartRequiredToast()
   useGraphicsRecoveryToast()
   useNotificationToasts()
+  const pageTransitionsEnabled = usePageTransitionsEnabled()
   const reducedMotion = useReducedMotion()
 
   const navigate = useNavigate()
@@ -105,6 +107,7 @@ export function AppLayout() {
     if (
       !surface ||
       typeof surface.animate !== 'function' ||
+      !pageTransitionsEnabled ||
       reducedMotion ||
       nextPageIndex === null ||
       previousIndex === null ||
@@ -131,7 +134,7 @@ export function AppLayout() {
       }
     )
     animation.onfinish = () => animation.cancel()
-  }, [location.pathname, reducedMotion])
+  }, [location.pathname, pageTransitionsEnabled, reducedMotion])
   const migrationActive = location.pathname === LEGACY_MIGRATION_ROUTE
   const settingsActive = /^\/settings(?:\/|$)/.test(location.pathname)
   const retainedSettings = useRef<ReactNode>(null)

@@ -1903,6 +1903,8 @@
       "liquidGlassEffectMacDesc": "Se aplică și ferestrei pe macOS 26 sau mai nou. Fereastra se redeschide la modificare.",
       "menuBar": "Bara de meniu",
       "reduceMotion": "Redu mișcarea",
+      "pageTransitions": "Tranziții între pagini",
+      "pageTransitionsDesc": "Animează schimbările de pagină și selecția din bara laterală.",
       "reduceMotionDesc": "Folosește mai puține animații în aplicație.",
       "hardwareAcceleration": "Accelerare hardware",
       "hardwareAccelerationDesc": "Folosește placa video pentru o afișare mai fluidă. Dezactivează dacă fereastra pâlpâie sau Motrix se închide neașteptat. Modificările se aplică după repornirea Motrix.",

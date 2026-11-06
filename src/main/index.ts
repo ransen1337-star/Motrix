@@ -452,6 +452,11 @@ const settingsManager = new SettingsManager(settingsPath, {
         structuredClone(updated.app.directoryPreferences)
       )
     }
+    if (old.app.pageTransitions !== updated.app.pageTransitions) {
+      eventBus.emit(Events.PageTransitionsChanged, {
+        pageTransitions: updated.app.pageTransitions,
+      })
+    }
     if (old.app.reduceMotion !== updated.app.reduceMotion) {
       eventBus.emit(Events.ReducedMotionChanged, {
         reduceMotion: updated.app.reduceMotion,

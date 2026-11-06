@@ -1343,6 +1343,8 @@
       "trayIconColorLight": "Ikon terang (panel gelap)",
       "trayIconColorDark": "Ikon gelap (panel terang)",
       "reduceMotion": "Kurangi gerakan",
+      "pageTransitions": "Transisi halaman",
+      "pageTransitionsDesc": "Animasikan perubahan halaman dan pilihan bilah samping.",
       "reduceMotionDesc": "Gunakan lebih sedikit animasi dalam aplikasi.",
       "hardwareAcceleration": "Akselerasi perangkat keras",
       "hardwareAccelerationDesc": "Menggunakan kartu grafis agar tampilan lebih lancar. Matikan jika jendela berkedip atau Motrix berhenti mendadak. Perubahan berlaku setelah Motrix dimulai ulang.",

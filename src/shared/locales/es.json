@@ -1371,6 +1371,8 @@
       "trayIconColorLight": "Icono claro (panel oscuro)",
       "trayIconColorDark": "Icono oscuro (panel claro)",
       "reduceMotion": "Reducir movimiento",
+      "pageTransitions": "Transiciones de página",
+      "pageTransitionsDesc": "Anima los cambios de página y la selección de la barra lateral.",
       "reduceMotionDesc": "Usa menos animaciones en toda la aplicación.",
       "hardwareAcceleration": "Aceleración por hardware",
       "hardwareAccelerationDesc": "Usa la tarjeta gráfica para mostrar la interfaz con mayor fluidez. Desactívala si la ventana parpadea o Motrix se cierra inesperadamente. Los cambios se aplican al reiniciar Motrix.",
