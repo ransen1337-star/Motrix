@@ -607,9 +607,20 @@ body.is-dashboard-resizing * {
 }
 
 ::view-transition-group(.page-transition-down),
-::view-transition-group(.page-transition-up) {
+::view-transition-group(.page-transition-up),
+::view-transition-group(.page-transition-none) {
   animation: none;
   overflow: clip;
+}
+
+::view-transition-old(.page-transition-none) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(.page-transition-none) {
+  animation: none;
+  opacity: 1;
 }
 
 ::view-transition-old(.page-transition-down) {

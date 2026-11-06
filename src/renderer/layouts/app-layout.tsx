@@ -61,10 +61,11 @@ function sidebarPageIndex(pathname: string): number | null {
   if (pathname === '/') return 0
   if (pathname.startsWith('/downloads')) return 1
   if (pathname.startsWith('/trackers')) return 2
-  if (pathname.startsWith('/plugins')) return 3
-  if (pathname === LEGACY_MIGRATION_ROUTE) return 4
-  if (pathname.startsWith('/notifications')) return 5
-  if (pathname.startsWith('/settings')) return 6
+  if (pathname === '/plugins') return 3
+  if (pathname.startsWith('/plugins/')) return 4
+  if (pathname === LEGACY_MIGRATION_ROUTE) return 5
+  if (pathname.startsWith('/notifications')) return 6
+  if (pathname.startsWith('/settings')) return 7
   return null
 }
 
@@ -113,7 +114,12 @@ export function AppLayout() {
   })
 
   const pageContent = (
-    <div data-slot="page-transition" className="min-h-0 flex-1 overflow-hidden">
+    <div
+      data-slot="page-transition"
+      data-page-index={pageIndex ?? 'none'}
+      data-transition-direction={transitionDirection ?? 'none'}
+      className="min-h-0 flex-1 overflow-hidden"
+    >
       <div hidden={!migrationActive} className="h-full min-h-0">
         <MigrationPage active={migrationActive} />
       </div>
@@ -188,7 +194,7 @@ export function AppLayout() {
                 update={
                   transitionDirection
                     ? `page-transition-${transitionDirection}`
-                    : 'none'
+                    : 'page-transition-none'
                 }
               >
                 {pageContent}

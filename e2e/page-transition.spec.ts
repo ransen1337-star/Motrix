@@ -1,6 +1,6 @@
 import { expect, test, waitForQueryHandlers } from './fixtures/electron-app'
 
-test('page navigation uses a vertical view transition', async ({
+test('page navigation direction follows sidebar order', async ({
   mainWindow,
 }) => {
   await waitForQueryHandlers(mainWindow)
@@ -9,79 +9,30 @@ test('page navigation uses a vertical view transition', async ({
   )
   test.skip(!supported, 'View Transitions API is unavailable')
 
+  const surface = mainWindow.locator('[data-slot="page-transition"]')
   await mainWindow.getByRole('link', { name: 'Dashboard', exact: true }).click()
   await expect(mainWindow).toHaveURL(/#\/?$/)
 
-  await mainWindow.evaluate(() => {
-    const original = document.startViewTransition.bind(document)
-    const capture = window as Window & {
-      __pageTransitionAnimations?: string[]
-    }
-    document.startViewTransition = (callback) => {
-      const transition = original(callback)
-      void transition.ready.then(() => {
-        capture.__pageTransitionAnimations = document
-          .getAnimations()
-          .map((animation) => (animation as CSSAnimation).animationName)
-      })
-      return transition
-    }
-  })
-
   await mainWindow.getByRole('link', { name: 'Trackers', exact: true }).click()
+  await expect(surface).toHaveAttribute('data-page-index', '2')
+  await expect(surface).toHaveAttribute('data-transition-direction', 'down')
 
-  await expect
-    .poll(() =>
-      mainWindow.evaluate(
-        () =>
-          (
-            window as Window & {
-              __pageTransitionAnimations?: string[]
-            }
-          ).__pageTransitionAnimations
-      )
-    )
-    .toEqual(
-      expect.arrayContaining([
-        'page-transition-enter-down',
-        'page-transition-exit-down',
-      ])
-    )
-  expect(
-    await mainWindow.evaluate(
-      () =>
-        (
-          window as Window & {
-            __pageTransitionAnimations?: string[]
-          }
-        ).__pageTransitionAnimations
-    )
-  ).not.toContain('-ua-view-transition-fade-out')
+  await mainWindow.getByRole('link', { name: 'Downloads', exact: true }).click()
+  await expect(surface).toHaveAttribute('data-page-index', '1')
+  await expect(surface).toHaveAttribute('data-transition-direction', 'up')
+
+  await mainWindow.getByRole('link', { name: 'Plugins', exact: true }).click()
+  await expect(surface).toHaveAttribute('data-page-index', '3')
+  await expect(surface).toHaveAttribute('data-transition-direction', 'down')
 
   await mainWindow.evaluate(() => {
-    ;(
-      window as Window & {
-        __pageTransitionAnimations?: string[]
-      }
-    ).__pageTransitionAnimations = []
+    location.hash = '/plugins/test.demo'
   })
-  await mainWindow.getByRole('link', { name: 'Downloads', exact: true }).click()
+  await expect(mainWindow).toHaveURL(/#\/plugins\/test\.demo$/)
+  await expect(surface).toHaveAttribute('data-page-index', '4')
+  await expect(surface).toHaveAttribute('data-transition-direction', 'down')
 
-  await expect
-    .poll(() =>
-      mainWindow.evaluate(
-        () =>
-          (
-            window as Window & {
-              __pageTransitionAnimations?: string[]
-            }
-          ).__pageTransitionAnimations
-      )
-    )
-    .toEqual(
-      expect.arrayContaining([
-        'page-transition-enter-up',
-        'page-transition-exit-up',
-      ])
-    )
+  await mainWindow.getByRole('link', { name: 'Dashboard', exact: true }).click()
+  await expect(surface).toHaveAttribute('data-page-index', '0')
+  await expect(surface).toHaveAttribute('data-transition-direction', 'up')
 })
