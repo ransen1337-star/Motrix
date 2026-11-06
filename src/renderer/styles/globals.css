@@ -724,7 +724,8 @@ html[data-reduced-motion="true"] *::after {
 html[data-interface-animations="false"] [data-slot="dialog-overlay"],
 html[data-interface-animations="false"] [data-slot="dialog-content"],
 html[data-interface-animations="false"] [data-slot="sidebar-menu-button"],
-html[data-interface-animations="false"] [data-slot="sidebar-inset"] {
+html[data-interface-animations="false"] [data-slot="sidebar-inset"],
+html[data-interface-animations="false"] [data-slot="tabs-indicator"] {
   animation: none;
   transition: none;
 }
