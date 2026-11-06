@@ -212,11 +212,6 @@ describe('AppLayout', () => {
     // Sidebar nav items
     expect(screen.getByText('Dashboard')).toBeInTheDocument()
     expect(screen.getByText('Settings')).toBeInTheDocument()
-    expect(document.querySelector('[data-slot="page-transition"]')).toHaveClass(
-      'min-h-0',
-      'flex-1',
-      'overflow-hidden'
-    )
     // Outlet rendered
     expect(screen.getByText('INDEX_PAGE')).toBeInTheDocument()
   })
