@@ -2,6 +2,7 @@ import { PanelShell } from '@renderer/components/desktop-kit/panel/panel-shell'
 import { transport } from '@renderer/lib/transport'
 import { cn } from '@renderer/lib/utils'
 import { navigateAfterViewTransition } from '@renderer/lib/view-transition'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { findCard, SETTINGS_CARDS } from './card-registry'
@@ -14,10 +15,17 @@ export function SettingsPage() {
   const visible = /^\/settings(?:\/|$)/.test(location.pathname)
   const { cardId } = useParams<{ cardId: string }>()
   const activeCard = findCard(cardId)
+  const [closingCardId, setClosingCardId] = useState<string | null>(null)
   const lastRowStart = (columns: number) =>
     Math.floor((SETTINGS_CARDS.length - 1) / columns) * columns
 
-  const closeDialog = () => navigate('/settings')
+  const closeDialog = () => {
+    if (cardId) setClosingCardId(cardId)
+  }
+  const finishClose = () => {
+    setClosingCardId(null)
+    if (location.pathname.startsWith('/settings/')) navigate('/settings')
+  }
 
   return (
     <PanelShell
@@ -54,8 +62,9 @@ export function SettingsPage() {
       </div>
       {activeCard && (
         <activeCard.Dialog
-          open={visible}
+          open={visible && closingCardId !== cardId}
           onClose={closeDialog}
+          onClosed={finishClose}
           labelKey={activeCard.labelKey}
           descKey={activeCard.descKey}
         />
