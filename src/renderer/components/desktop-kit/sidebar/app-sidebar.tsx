@@ -22,9 +22,10 @@ import {
   SidebarSeparator,
 } from '@renderer/components/ui/sidebar'
 import { useLegacyImportNavigation } from '@renderer/features/legacy-import/use-legacy-import-navigation'
+import { navigateAfterViewTransition } from '@renderer/lib/view-transition'
 import { LEGACY_MIGRATION_ROUTE } from '@shared/lib/legacy-import-navigation'
 import { useTranslation } from 'react-i18next'
-import { NavLink } from 'react-router'
+import { NavLink, useNavigate } from 'react-router'
 
 interface NavItem {
   to: string
@@ -46,6 +47,7 @@ const FOOTER_NAV_ITEMS: readonly NavItem[] = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const direction = useDirection()
   const { visible } = useLegacyImportNavigation()
   const items = visible
@@ -78,7 +80,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 const Icon = item.icon
                 return (
                   <SidebarMenuItem key={item.to}>
-                    <NavLink to={item.to} end={item.end}>
+                    <NavLink
+                      to={item.to}
+                      end={item.end}
+                      onClick={(event) =>
+                        navigateAfterViewTransition(item.to, navigate, event)
+                      }
+                    >
                       {({ isActive }) => (
                         <SidebarMenuButton
                           render={<span />}
@@ -110,7 +118,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             const Icon = item.icon
             return (
               <SidebarMenuItem key={item.to}>
-                <NavLink to={item.to} end={item.end}>
+                <NavLink
+                  to={item.to}
+                  end={item.end}
+                  onClick={(event) =>
+                    navigateAfterViewTransition(item.to, navigate, event)
+                  }
+                >
                   {({ isActive }) => (
                     <SidebarMenuButton
                       render={<span />}

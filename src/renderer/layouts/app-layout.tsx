@@ -25,6 +25,7 @@ import { useToastEvents } from '@renderer/hooks/use-toast-events'
 import { useWindowTorrentDrop } from '@renderer/hooks/use-window-torrent-drop'
 import { useReducedMotion } from '@renderer/lib/reduced-motion'
 import { cn } from '@renderer/lib/utils'
+import { finishViewTransitionAnimations } from '@renderer/lib/view-transition'
 import { electronServices } from '@renderer/platform/electron-services'
 import { FnosEntry } from '@renderer/platform/fnos-entry'
 import { PlatformServicesProvider } from '@renderer/platform/services'
@@ -102,6 +103,10 @@ export function AppLayout() {
   const transparentInset = matches.some(
     (m) => (m.handle as RouteHandle | undefined)?.transparentInset
   )
+  const navigateFromShell = async (path: string) => {
+    await finishViewTransitionAnimations()
+    return navigate(path)
+  }
   useIpcEvent(Events.NavigateTo, (...args) => {
     const path = args[0]
     if (typeof path !== 'string' || !path) return
@@ -110,7 +115,7 @@ export function AppLayout() {
       useDownloadsView.getState().setInspectorVisible(false)
       useDownloadsSelection.getState().clearSelection()
     }
-    return navigate(path)
+    return navigateFromShell(path)
   })
 
   const pageContent = (
@@ -184,7 +189,7 @@ export function AppLayout() {
           >
             <RendererSubmissionNotice
               className="mx-4 mb-2 mt-12"
-              onOpenDownloads={() => void navigate('/downloads/all')}
+              onOpenDownloads={() => void navigateFromShell('/downloads/all')}
             />
             {reducedMotion ? (
               pageContent
@@ -194,7 +199,7 @@ export function AppLayout() {
                 update={
                   transitionDirection
                     ? `page-transition-${transitionDirection}`
-                    : 'page-transition-none'
+                    : 'none'
                 }
               >
                 {pageContent}

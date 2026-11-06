@@ -1,6 +1,7 @@
 import { PanelShell } from '@renderer/components/desktop-kit/panel/panel-shell'
 import { transport } from '@renderer/lib/transport'
 import { cn } from '@renderer/lib/utils'
+import { navigateAfterViewTransition } from '@renderer/lib/view-transition'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { findCard, SETTINGS_CARDS } from './card-registry'
@@ -37,7 +38,9 @@ export function SettingsPage() {
                 ? 'settings.general.inAppNotificationsDesc'
                 : card.descKey
             }
-            onClick={() => navigate(`/settings/${card.id}`)}
+            onClick={() => {
+              navigateAfterViewTransition(`/settings/${card.id}`, navigate)
+            }}
             className={cn(
               'border-border',
               index < lastRowStart(1) && 'border-b-[0.5px]',
