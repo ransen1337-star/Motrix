@@ -25,7 +25,6 @@ import { useToastEvents } from '@renderer/hooks/use-toast-events'
 import { useWindowTorrentDrop } from '@renderer/hooks/use-window-torrent-drop'
 import { useReducedMotion } from '@renderer/lib/reduced-motion'
 import { cn } from '@renderer/lib/utils'
-import { finishViewTransitionAnimations } from '@renderer/lib/view-transition'
 import { electronServices } from '@renderer/platform/electron-services'
 import { FnosEntry } from '@renderer/platform/fnos-entry'
 import { PlatformServicesProvider } from '@renderer/platform/services'
@@ -41,7 +40,7 @@ import { usePairRequestPrompts } from '@renderer/routes/settings/cards/integrati
 import { LEGACY_MIGRATION_ROUTE } from '@shared/lib/legacy-import-navigation'
 import { isDownloadsListRoute } from '@shared/lib/task-navigation'
 import { Events } from '@shared/protocol/events'
-import { type ReactNode, useLayoutEffect, useRef, ViewTransition } from 'react'
+import { type ReactNode, useLayoutEffect, useRef } from 'react'
 import { useLocation, useMatches, useNavigate, useOutlet } from 'react-router'
 
 const platformServices =
@@ -84,6 +83,7 @@ export function AppLayout() {
   const outlet = useOutlet()
   const pageIndex = sidebarPageIndex(location.pathname)
   const previousPageIndex = useRef(pageIndex)
+  const pageSurfaceRef = useRef<HTMLDivElement>(null)
   const transitionDirection =
     pageIndex === null || previousPageIndex.current === null
       ? null
@@ -93,8 +93,45 @@ export function AppLayout() {
           ? 'down'
           : 'up'
   useLayoutEffect(() => {
-    previousPageIndex.current = pageIndex
-  }, [pageIndex])
+    const surface = pageSurfaceRef.current
+    const previousIndex = previousPageIndex.current
+    const nextPageIndex = sidebarPageIndex(location.pathname)
+    previousPageIndex.current = nextPageIndex
+    if (typeof surface?.getAnimations === 'function') {
+      surface.getAnimations().forEach((animation) => {
+        animation.cancel()
+      })
+    }
+    if (
+      !surface ||
+      typeof surface.animate !== 'function' ||
+      reducedMotion ||
+      nextPageIndex === null ||
+      previousIndex === null ||
+      nextPageIndex === previousIndex
+    )
+      return
+
+    // Keep page transitions off the document top layer so later navigation
+    // and dialogs cannot inherit stale snapshots.
+    const offset = nextPageIndex > previousIndex ? -14 : 14
+    const animation = surface.animate(
+      [
+        {
+          filter: 'blur(5px)',
+          opacity: 0.55,
+          transform: `translate3d(0, ${offset}px, 0)`,
+        },
+        { filter: 'blur(0)', opacity: 1, transform: 'translate3d(0, 0, 0)' },
+      ],
+      {
+        duration: 240,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        fill: 'both',
+      }
+    )
+    animation.onfinish = () => animation.cancel()
+  }, [location.pathname, reducedMotion])
   const migrationActive = location.pathname === LEGACY_MIGRATION_ROUTE
   const settingsActive = /^\/settings(?:\/|$)/.test(location.pathname)
   const retainedSettings = useRef<ReactNode>(null)
@@ -103,10 +140,6 @@ export function AppLayout() {
   const transparentInset = matches.some(
     (m) => (m.handle as RouteHandle | undefined)?.transparentInset
   )
-  const navigateFromShell = async (path: string) => {
-    await finishViewTransitionAnimations()
-    return navigate(path)
-  }
   useIpcEvent(Events.NavigateTo, (...args) => {
     const path = args[0]
     if (typeof path !== 'string' || !path) return
@@ -115,11 +148,12 @@ export function AppLayout() {
       useDownloadsView.getState().setInspectorVisible(false)
       useDownloadsSelection.getState().clearSelection()
     }
-    return navigateFromShell(path)
+    return navigate(path)
   })
 
   const pageContent = (
     <div
+      ref={pageSurfaceRef}
       data-slot="page-transition"
       data-page-index={pageIndex ?? 'none'}
       data-transition-direction={transitionDirection ?? 'none'}
@@ -189,22 +223,9 @@ export function AppLayout() {
           >
             <RendererSubmissionNotice
               className="mx-4 mb-2 mt-12"
-              onOpenDownloads={() => void navigateFromShell('/downloads/all')}
+              onOpenDownloads={() => void navigate('/downloads/all')}
             />
-            {reducedMotion ? (
-              pageContent
-            ) : (
-              <ViewTransition
-                name="app-page"
-                update={
-                  transitionDirection
-                    ? `page-transition-${transitionDirection}`
-                    : 'none'
-                }
-              >
-                {pageContent}
-              </ViewTransition>
-            )}
+            {pageContent}
             <WebConnectionNotice />
           </SidebarInset>
         </SidebarProvider>

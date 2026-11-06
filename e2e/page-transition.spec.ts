@@ -1,54 +1,39 @@
 import type { Page } from '@playwright/test'
 import { expect, test, waitForQueryHandlers } from './fixtures/electron-app'
 
-function observeAppPageTransition(page: Page) {
+function observeTransitionAnimations(page: Page) {
   return page.evaluate(
     () =>
-      new Promise<string[]>((resolve) => {
-        const seen = new Set<string>()
+      new Promise<{
+        inset: string[]
+        page: number
+        sidebar: number
+      }>((resolve) => {
+        const insetTransitions = new Set<string>()
+        const surface = document.querySelector<HTMLElement>(
+          '[data-slot="page-transition"]'
+        )
+        const inset = document.querySelector<HTMLElement>(
+          '[data-slot="sidebar-inset"]'
+        )
+        let pageAnimations = 0
+        let sidebarAnimations = 0
         const deadline = performance.now() + 600
         const sample = () => {
+          pageAnimations = Math.max(
+            pageAnimations,
+            surface?.getAnimations().length ?? 0
+          )
+          sidebarAnimations = Math.max(
+            sidebarAnimations,
+            document
+              .querySelector<HTMLElement>(
+                '[data-slot="sidebar-menu-button-active"]'
+              )
+              ?.getAnimations().length ?? 0
+          )
           for (const animation of document.getAnimations()) {
             const effect = animation.effect
-            const pseudo =
-              effect instanceof KeyframeEffect ? effect.pseudoElement : null
-            if (pseudo?.includes('app-page')) seen.add(pseudo)
-          }
-          if (performance.now() < deadline) requestAnimationFrame(sample)
-          else resolve([...seen])
-        }
-        sample()
-      })
-  )
-}
-
-test('page navigation direction follows sidebar order', async ({
-  mainWindow,
-}) => {
-  await waitForQueryHandlers(mainWindow)
-  const supported = await mainWindow.evaluate(
-    () => typeof document.startViewTransition === 'function'
-  )
-  test.skip(!supported, 'View Transitions API is unavailable')
-
-  const surface = mainWindow.locator('[data-slot="page-transition"]')
-  await mainWindow.getByRole('link', { name: 'Dashboard', exact: true }).click()
-  await expect(mainWindow).toHaveURL(/#\/?$/)
-
-  const transitionSample = mainWindow.evaluate(
-    () =>
-      new Promise<{ inset: string[]; sidebar: string[] }>((resolve) => {
-        const insetTransitions = new Set<string>()
-        const sidebarTransitions = new Set<string>()
-        const inset = document.querySelector('[data-slot="sidebar-inset"]')
-        const deadline = performance.now() + 800
-        const sample = () => {
-          for (const animation of document.getAnimations()) {
-            const effect = animation.effect
-            const pseudo =
-              effect instanceof KeyframeEffect ? effect.pseudoElement : null
-            if (pseudo?.includes('sidebar-active'))
-              sidebarTransitions.add(pseudo)
             if (
               effect instanceof KeyframeEffect &&
               effect.target === inset &&
@@ -61,19 +46,31 @@ test('page navigation direction follows sidebar order', async ({
           else
             resolve({
               inset: [...insetTransitions],
-              sidebar: [...sidebarTransitions],
+              page: pageAnimations,
+              sidebar: sidebarAnimations,
             })
         }
         sample()
       })
   )
+}
+
+test('page navigation direction follows sidebar order', async ({
+  mainWindow,
+}) => {
+  await waitForQueryHandlers(mainWindow)
+
+  const surface = mainWindow.locator('[data-slot="page-transition"]')
+  await mainWindow.getByRole('link', { name: 'Dashboard', exact: true }).click()
+  await expect(mainWindow).toHaveURL(/#\/?$/)
+
+  const transitionSample = observeTransitionAnimations(mainWindow)
   await mainWindow.getByRole('link', { name: 'Trackers', exact: true }).click()
   await expect(surface).toHaveAttribute('data-page-index', '2')
   await expect(surface).toHaveAttribute('data-transition-direction', 'down')
   const transitions = await transitionSample
-  expect(transitions.sidebar).toContain(
-    '::view-transition-group(sidebar-active)'
-  )
+  expect(transitions.page).toBeGreaterThan(0)
+  expect(transitions.sidebar).toBeGreaterThan(0)
   expect(transitions.inset).toContain('background-color')
   expect(transitions.inset).toContain('box-shadow')
   await expect(
@@ -118,24 +115,14 @@ test('rapid sidebar navigation keeps page transitions active', async ({
   await expect(mainWindow).toHaveURL(/#\/trackers$/)
 
   await mainWindow.waitForTimeout(350)
-  const firstTransition = observeAppPageTransition(mainWindow)
+  const firstTransition = observeTransitionAnimations(mainWindow)
   await link('Dashboard').click()
-  expect(await firstTransition).toEqual(
-    expect.arrayContaining([
-      '::view-transition-old(app-page)',
-      '::view-transition-new(app-page)',
-    ])
-  )
+  expect((await firstTransition).page).toBeGreaterThan(0)
 
   await mainWindow.waitForTimeout(350)
-  const secondTransition = observeAppPageTransition(mainWindow)
+  const secondTransition = observeTransitionAnimations(mainWindow)
   await link('Downloads').click()
-  expect(await secondTransition).toEqual(
-    expect.arrayContaining([
-      '::view-transition-old(app-page)',
-      '::view-transition-new(app-page)',
-    ])
-  )
+  expect((await secondTransition).page).toBeGreaterThan(0)
 })
 
 test('settings dialog does not inherit a page transition snapshot', async ({
@@ -149,16 +136,10 @@ test('settings dialog does not inherit a page transition snapshot', async ({
   ).toBeVisible()
 
   expect(
-    await mainWindow.evaluate(() =>
-      document.getAnimations().some((animation) => {
-        const effect = animation.effect
-        return (
-          effect instanceof KeyframeEffect &&
-          effect.pseudoElement?.includes('app-page')
-        )
-      })
-    )
-  ).toBe(false)
+    await mainWindow
+      .locator('[data-slot="page-transition"]')
+      .evaluate((surface) => surface.getAnimations().length)
+  ).toBe(0)
 
   const closeAnimation = mainWindow.evaluate(
     () =>
@@ -190,14 +171,9 @@ test('settings dialog does not inherit a page transition snapshot', async ({
   ).not.toBeVisible()
   await expect(mainWindow).toHaveURL(/#\/settings$/)
   await mainWindow.waitForTimeout(350)
-  const transition = observeAppPageTransition(mainWindow)
+  const transition = observeTransitionAnimations(mainWindow)
   await mainWindow.getByRole('link', { name: 'Downloads', exact: true }).click()
-  expect(await transition).toEqual(
-    expect.arrayContaining([
-      '::view-transition-old(app-page)',
-      '::view-transition-new(app-page)',
-    ])
-  )
+  expect((await transition).page).toBeGreaterThan(0)
 })
 
 test('notifications and settings keep page and selection transitions', async ({
@@ -211,52 +187,19 @@ test('notifications and settings keep page and selection transitions', async ({
   await link('Dashboard').click()
   await mainWindow.waitForTimeout(350)
 
-  const pageTransition = observeAppPageTransition(mainWindow)
-  const selectionTransition = mainWindow.evaluate(
-    () =>
-      new Promise<string[]>((resolve) => {
-        const seen = new Set<string>()
-        const deadline = performance.now() + 600
-        const sample = () => {
-          for (const animation of document.getAnimations()) {
-            const effect = animation.effect
-            const pseudo =
-              effect instanceof KeyframeEffect ? effect.pseudoElement : null
-            if (pseudo?.includes('sidebar-active')) seen.add(pseudo)
-          }
-          if (performance.now() < deadline) requestAnimationFrame(sample)
-          else resolve([...seen])
-        }
-        sample()
-      })
-  )
+  const transition = observeTransitionAnimations(mainWindow)
 
   await link('Notifications').click()
   await link('Settings').click()
   await expect(mainWindow).toHaveURL(/#\/settings$/)
   await expect(surface).toHaveAttribute('data-transition-direction', 'down')
-  expect(await pageTransition).toEqual(
-    expect.arrayContaining([
-      '::view-transition-old(app-page)',
-      '::view-transition-new(app-page)',
-    ])
-  )
-  expect(await selectionTransition).toEqual(
-    expect.arrayContaining([
-      '::view-transition-group(sidebar-active)',
-      '::view-transition-old(sidebar-active)',
-      '::view-transition-new(sidebar-active)',
-    ])
-  )
+  const transitions = await transition
+  expect(transitions.page).toBeGreaterThan(0)
+  expect(transitions.sidebar).toBeGreaterThan(0)
 
   await mainWindow.waitForTimeout(350)
-  const returnTransition = observeAppPageTransition(mainWindow)
+  const returnTransition = observeTransitionAnimations(mainWindow)
   await link('Dashboard').click()
   await expect(surface).toHaveAttribute('data-transition-direction', 'up')
-  expect(await returnTransition).toEqual(
-    expect.arrayContaining([
-      '::view-transition-old(app-page)',
-      '::view-transition-new(app-page)',
-    ])
-  )
+  expect((await returnTransition).page).toBeGreaterThan(0)
 })

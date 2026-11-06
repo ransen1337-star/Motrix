@@ -3,9 +3,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@renderer/components/ui/sidebar'
-import { navigateAfterViewTransition } from '@renderer/lib/view-transition'
 import { useTranslation } from 'react-i18next'
-import { NavLink, useNavigate } from 'react-router'
+import { NavLink } from 'react-router'
 import { useNotifications } from './use-notifications'
 
 const UNREAD_DISPLAY_CAP = 99
@@ -25,7 +24,6 @@ const UNREAD_DISPLAY_CAP = 99
  */
 export function NotificationsNavItem() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { unreadCount, badgeStyle } = useNotifications({ countOnly: true })
   const badgeLabel =
     unreadCount > UNREAD_DISPLAY_CAP
@@ -34,12 +32,7 @@ export function NotificationsNavItem() {
 
   return (
     <SidebarMenuItem>
-      <NavLink
-        to="/notifications"
-        onClick={(event) =>
-          navigateAfterViewTransition('/notifications', navigate, event)
-        }
-      >
+      <NavLink to="/notifications">
         {({ isActive }) => (
           <SidebarMenuButton
             render={<span />}
