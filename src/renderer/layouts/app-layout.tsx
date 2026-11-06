@@ -23,6 +23,7 @@ import { useNotificationToasts } from '@renderer/hooks/use-notification-toasts'
 import { useSidebarColor } from '@renderer/hooks/use-sidebar-color'
 import { useToastEvents } from '@renderer/hooks/use-toast-events'
 import { useWindowTorrentDrop } from '@renderer/hooks/use-window-torrent-drop'
+import { useReducedMotion } from '@renderer/lib/reduced-motion'
 import { cn } from '@renderer/lib/utils'
 import { electronServices } from '@renderer/platform/electron-services'
 import { FnosEntry } from '@renderer/platform/fnos-entry'
@@ -39,7 +40,7 @@ import { usePairRequestPrompts } from '@renderer/routes/settings/cards/integrati
 import { LEGACY_MIGRATION_ROUTE } from '@shared/lib/legacy-import-navigation'
 import { isDownloadsListRoute } from '@shared/lib/task-navigation'
 import { Events } from '@shared/protocol/events'
-import { type ReactNode, useRef } from 'react'
+import { type ReactNode, useLayoutEffect, useRef, ViewTransition } from 'react'
 import { useLocation, useMatches, useNavigate, useOutlet } from 'react-router'
 
 const platformServices =
@@ -56,6 +57,17 @@ function WindowTorrentDrop() {
   return null
 }
 
+function sidebarPageIndex(pathname: string): number | null {
+  if (pathname === '/') return 0
+  if (pathname.startsWith('/downloads')) return 1
+  if (pathname.startsWith('/trackers')) return 2
+  if (pathname.startsWith('/plugins')) return 3
+  if (pathname === LEGACY_MIGRATION_ROUTE) return 4
+  if (pathname.startsWith('/notifications')) return 5
+  if (pathname.startsWith('/settings')) return 6
+  return null
+}
+
 export function AppLayout() {
   useSidebarColor()
   useToastEvents()
@@ -63,10 +75,24 @@ export function AppLayout() {
   useEngineRestartRequiredToast()
   useGraphicsRecoveryToast()
   useNotificationToasts()
+  const reducedMotion = useReducedMotion()
 
   const navigate = useNavigate()
   const location = useLocation()
   const outlet = useOutlet()
+  const pageIndex = sidebarPageIndex(location.pathname)
+  const previousPageIndex = useRef(pageIndex)
+  const transitionDirection =
+    pageIndex === null || previousPageIndex.current === null
+      ? null
+      : pageIndex === previousPageIndex.current
+        ? null
+        : pageIndex > previousPageIndex.current
+          ? 'down'
+          : 'up'
+  useLayoutEffect(() => {
+    previousPageIndex.current = pageIndex
+  }, [pageIndex])
   const migrationActive = location.pathname === LEGACY_MIGRATION_ROUTE
   const settingsActive = /^\/settings(?:\/|$)/.test(location.pathname)
   const retainedSettings = useRef<ReactNode>(null)
@@ -85,6 +111,23 @@ export function AppLayout() {
     }
     return navigate(path)
   })
+
+  const pageContent = (
+    <div data-slot="page-transition" className="min-h-0 flex-1 overflow-hidden">
+      <div hidden={!migrationActive} className="h-full min-h-0">
+        <MigrationPage active={migrationActive} />
+      </div>
+      <div hidden={!settingsActive} className="h-full min-h-0">
+        {retainedSettings.current}
+      </div>
+      <div
+        hidden={migrationActive || settingsActive}
+        className="h-full min-h-0"
+      >
+        {!settingsActive && outlet}
+      </div>
+    </div>
+  )
 
   return (
     <TooltipProvider>
@@ -137,20 +180,20 @@ export function AppLayout() {
               className="mx-4 mb-2 mt-12"
               onOpenDownloads={() => void navigate('/downloads/all')}
             />
-            <div className="min-h-0 flex-1 overflow-hidden">
-              <div hidden={!migrationActive} className="h-full min-h-0">
-                <MigrationPage active={migrationActive} />
-              </div>
-              <div hidden={!settingsActive} className="h-full min-h-0">
-                {retainedSettings.current}
-              </div>
-              <div
-                hidden={migrationActive || settingsActive}
-                className="h-full min-h-0"
+            {reducedMotion ? (
+              pageContent
+            ) : (
+              <ViewTransition
+                name="app-page"
+                update={
+                  transitionDirection
+                    ? `page-transition-${transitionDirection}`
+                    : 'none'
+                }
               >
-                {!settingsActive && outlet}
-              </div>
-            </div>
+                {pageContent}
+              </ViewTransition>
+            )}
             <WebConnectionNotice />
           </SidebarInset>
         </SidebarProvider>
