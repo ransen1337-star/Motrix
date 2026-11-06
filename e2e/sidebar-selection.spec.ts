@@ -9,60 +9,6 @@ const destinations = [
   'Settings',
 ]
 
-test('inactive sidebar hover shade fades in and out', async ({
-  mainWindow,
-}) => {
-  const link = mainWindow.getByRole('link', {
-    name: 'Downloads',
-    exact: true,
-  })
-  const button = link.locator('[data-sidebar="menu-button"]')
-  const backgroundAlpha = () =>
-    button.evaluate((element) =>
-      Number(getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.[3])
-    )
-
-  await mainWindow.mouse.move(500, 45)
-  await expect.poll(backgroundAlpha).toBe(0)
-  await link.hover()
-  await expect.poll(backgroundAlpha).toBeGreaterThan(0)
-  await mainWindow.mouse.move(500, 45)
-  await expect.poll(backgroundAlpha).toBe(0)
-})
-
-test('active sidebar fill slides from the previous item to the target', async ({
-  mainWindow,
-}) => {
-  const indicator = mainWindow.locator('[data-slot="sidebar-selection"]')
-  await mainWindow.getByRole('link', { name: 'Dashboard', exact: true }).click()
-  await mainWindow.waitForTimeout(350)
-  const start = await indicator.evaluate(
-    (element) => element.getBoundingClientRect().top
-  )
-
-  const sampled = mainWindow.evaluate(
-    () =>
-      new Promise<number[]>((resolve) => {
-        const tops: number[] = []
-        const deadline = performance.now() + 400
-        const sample = () => {
-          const element = document.querySelector<HTMLElement>(
-            '[data-slot="sidebar-selection"]'
-          )
-          if (element) tops.push(element.getBoundingClientRect().top)
-          if (performance.now() < deadline) requestAnimationFrame(sample)
-          else resolve(tops)
-        }
-        sample()
-      })
-  )
-
-  await mainWindow.getByRole('link', { name: 'Trackers', exact: true }).click()
-  const tops = await sampled
-  expect(new Set(tops.map((top) => Math.round(top))).size).toBeGreaterThan(2)
-  expect(tops.at(-1) ?? start).toBeGreaterThan(start + 20)
-})
-
 for (const platform of ['win32', 'linux', 'darwin']) {
   test(`sidebar selection remains distinct across the gradient (${platform} CSS)`, async ({
     mainWindow,
@@ -102,10 +48,7 @@ for (const platform of ['win32', 'linux', 'darwin']) {
           await link.click()
           await mainWindow.mouse.move(500, 45)
           await expect(button).toHaveAttribute('data-active', 'true')
-          const activeLayer = mainWindow.locator(
-            '[data-slot="sidebar-selection"]'
-          )
-          const background = await activeLayer.evaluate(
+          const background = await button.evaluate(
             (element) => getComputedStyle(element).backgroundColor
           )
           const channels = background.match(/[\d.]+/g)?.map(Number)
@@ -121,28 +64,15 @@ for (const platform of ['win32', 'linux', 'darwin']) {
 
           // Hovering a selected item must not replace the selected fill.
           await link.hover()
-          await expect(activeLayer).toHaveCSS('background-color', background)
-          await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
+          await expect(button).toHaveCSS('background-color', background)
           const other = mainWindow.getByRole('link', {
             name: destination === 'Dashboard' ? 'Settings' : 'Dashboard',
             exact: true,
           })
           await other.hover()
-          const otherButton = other.locator('[data-sidebar="menu-button"]')
-          await expect
-            .poll(() =>
-              otherButton.evaluate((element) =>
-                Number(
-                  getComputedStyle(element).backgroundColor.match(
-                    /[\d.]+/g
-                  )?.[3]
-                )
-              )
-            )
-            .toBeGreaterThan(0)
-          const hoverBackground = await otherButton.evaluate(
-            (element) => getComputedStyle(element).backgroundColor
-          )
+          const hoverBackground = await other
+            .locator('[data-sidebar="menu-button"]')
+            .evaluate((element) => getComputedStyle(element).backgroundColor)
           const hoverAlpha = Number(hoverBackground.match(/[\d.]+/g)?.[3])
           expect(hoverAlpha).toBeGreaterThan(0)
           expect(hoverAlpha).toBeLessThan(alpha)

@@ -165,9 +165,6 @@ describe('AppSidebar', () => {
     render(wrap(<AppSidebar />, ['/trackers']))
     const trackers = screen.getByText('Trackers').closest('a')
     expect(trackers?.getAttribute('aria-current')).toBe('page')
-    expect(
-      document.querySelectorAll('[data-slot="sidebar-selection"]')
-    ).toHaveLength(1)
   })
 
   it('renders the Notifications entry before a separator before Settings in the footer', () => {
