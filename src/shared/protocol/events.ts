@@ -42,8 +42,8 @@ export const Events = {
   AppError: 'event:appError',
   DirectoryPreferencesChanged: 'event:directoryPreferencesChanged',
   SettingsChanged: 'event:settingsChanged',
-  // Payload: { pageTransitions: boolean }.
-  PageTransitionsChanged: 'event:pageTransitionsChanged',
+  // Payload: { interfaceAnimations: boolean }.
+  InterfaceAnimationsChanged: 'event:interfaceAnimationsChanged',
   // Payload: { reduceMotion: boolean }. Full settings remain host-internal.
   ReducedMotionChanged: 'event:reducedMotionChanged',
   // Payload: { liquidGlassEffect: boolean }.

@@ -720,6 +720,19 @@ html[data-reduced-motion="true"] *::after {
 }
 /* biome-ignore-end lint/complexity/noImportantStyles: The accessibility preference overrides inline timings and animation utilities. */
 
+/* App-authored motion stays optional without disabling unrelated system or library animations. */
+html[data-interface-animations="false"] [data-slot="dialog-overlay"],
+html[data-interface-animations="false"] [data-slot="dialog-content"],
+html[data-interface-animations="false"] [data-slot="sidebar-menu-button"],
+html[data-interface-animations="false"] [data-slot="sidebar-inset"] {
+  animation: none;
+  transition: none;
+}
+
+html[data-interface-animations="false"] [data-slot="dialog-content"] {
+  will-change: auto;
+}
+
 /* Browser chrome includes the same Logo and primary controls as desktop. */
 .web-window-chrome {
   --window-chrome-safe-area-leading: 160px;

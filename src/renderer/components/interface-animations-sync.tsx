@@ -1,7 +1,7 @@
 import {
-  setPageTransitionsEnabled,
-  usePageTransitionsEnabled,
-} from '@renderer/lib/page-transitions'
+  setInterfaceAnimationsEnabled,
+  useInterfaceAnimationsEnabled,
+} from '@renderer/lib/interface-animations'
 import {
   onSettingsRefresh,
   type SettingsReader,
@@ -13,14 +13,14 @@ import { DEFAULT_APP_SETTINGS } from '@shared/schemas/app-settings'
 import type { AppSettings } from '@shared/types/settings'
 import { useEffect, useLayoutEffect } from 'react'
 
-export function PageTransitionsSync({ syncSettings = true }) {
-  const pageTransitionsEnabled = usePageTransitionsEnabled()
+export function InterfaceAnimationsSync({ syncSettings = true }) {
+  const interfaceAnimationsEnabled = useInterfaceAnimationsEnabled()
 
   useLayoutEffect(() => {
-    document.documentElement.dataset.pageTransitions = String(
-      pageTransitionsEnabled
+    document.documentElement.dataset.interfaceAnimations = String(
+      interfaceAnimationsEnabled
     )
-  }, [pageTransitionsEnabled])
+  }, [interfaceAnimationsEnabled])
 
   useEffect(() => {
     if (!syncSettings) return
@@ -34,21 +34,25 @@ export function PageTransitionsSync({ syncSettings = true }) {
       const data = await read(Queries.GetSettings)
       if (!active || requestGeneration !== generation) return
       const settings = data as AppSettings | undefined
-      setPageTransitionsEnabled(
-        settings?.app?.pageTransitions ?? DEFAULT_APP_SETTINGS.pageTransitions
+      setInterfaceAnimationsEnabled(
+        settings?.app?.interfaceAnimations ??
+          DEFAULT_APP_SETTINGS.interfaceAnimations
       )
     }
     const refresh = () => void reconcile().catch(() => {})
-    const onPageTransitionsChanged = (payload: unknown) => {
-      const { pageTransitions } = (payload ?? {}) as {
-        pageTransitions?: unknown
+    const onInterfaceAnimationsChanged = (payload: unknown) => {
+      const { interfaceAnimations } = (payload ?? {}) as {
+        interfaceAnimations?: unknown
       }
-      if (typeof pageTransitions !== 'boolean') return
+      if (typeof interfaceAnimations !== 'boolean') return
       generation += 1
-      setPageTransitionsEnabled(pageTransitions)
+      setInterfaceAnimationsEnabled(interfaceAnimations)
     }
 
-    transport.on(Events.PageTransitionsChanged, onPageTransitionsChanged)
+    transport.on(
+      Events.InterfaceAnimationsChanged,
+      onInterfaceAnimationsChanged
+    )
     const stopConnectionSync = transport.onConnectionChange?.((event) => {
       if (event.state === 'connected') refresh()
     })
@@ -57,7 +61,10 @@ export function PageTransitionsSync({ syncSettings = true }) {
     return () => {
       active = false
       generation += 1
-      transport.off(Events.PageTransitionsChanged, onPageTransitionsChanged)
+      transport.off(
+        Events.InterfaceAnimationsChanged,
+        onInterfaceAnimationsChanged
+      )
       stopConnectionSync?.()
       stopSettingsSync()
     }

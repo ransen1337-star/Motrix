@@ -1,4 +1,4 @@
-import { getPageTransitionsEnabled } from '@renderer/lib/page-transitions'
+import { getInterfaceAnimationsEnabled } from '@renderer/lib/interface-animations'
 import { getReducedMotion } from '@renderer/lib/reduced-motion'
 import { type RefObject, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router'
@@ -36,7 +36,7 @@ export function SidebarSelectionIndicator({
       const shouldAnimate =
         animate &&
         positioned.current &&
-        getPageTransitionsEnabled() &&
+        getInterfaceAnimationsEnabled() &&
         !getReducedMotion()
       indicator.style.transition = shouldAnimate
         ? 'transform 220ms cubic-bezier(0.22, 1, 0.36, 1), width 220ms cubic-bezier(0.22, 1, 0.36, 1), height 220ms cubic-bezier(0.22, 1, 0.36, 1)'

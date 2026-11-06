@@ -452,9 +452,9 @@ const settingsManager = new SettingsManager(settingsPath, {
         structuredClone(updated.app.directoryPreferences)
       )
     }
-    if (old.app.pageTransitions !== updated.app.pageTransitions) {
-      eventBus.emit(Events.PageTransitionsChanged, {
-        pageTransitions: updated.app.pageTransitions,
+    if (old.app.interfaceAnimations !== updated.app.interfaceAnimations) {
+      eventBus.emit(Events.InterfaceAnimationsChanged, {
+        interfaceAnimations: updated.app.interfaceAnimations,
       })
     }
     if (old.app.reduceMotion !== updated.app.reduceMotion) {

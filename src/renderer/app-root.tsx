@@ -1,8 +1,8 @@
 import { ByteUnitSync } from '@renderer/components/byte-unit-sync'
+import { InterfaceAnimationsSync } from '@renderer/components/interface-animations-sync'
 import { LanguageSync } from '@renderer/components/language-sync'
 import { LocaleDirectionProvider } from '@renderer/components/locale-direction-provider'
 import { OperatorUnlockGate } from '@renderer/components/operator-unlock-gate'
-import { PageTransitionsSync } from '@renderer/components/page-transitions-sync'
 import { ReducedMotionSync } from '@renderer/components/reduced-motion-sync'
 import { ThemeSync } from '@renderer/components/theme-sync'
 import { WindowControlsOverlayProvider } from '@renderer/components/window-chrome/window-controls-overlay-provider'
@@ -71,7 +71,7 @@ function Root({
       <LocaleDirectionProvider>
         {syncSettings && <ThemeSync />}
         {syncSettings && <ByteUnitSync />}
-        <PageTransitionsSync syncSettings={syncSettings} />
+        <InterfaceAnimationsSync syncSettings={syncSettings} />
         <ReducedMotionSync syncSettings={syncSettings} />
         <LanguageSync windowId={windowId} />
         <WindowControlsOverlayProvider>

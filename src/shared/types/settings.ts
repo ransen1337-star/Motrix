@@ -230,7 +230,7 @@ export interface MotrixAppSettings {
   mainWindowMinHeight: number
   theme: 'system' | 'light' | 'dark'
   sidebarColor: SidebarColor
-  pageTransitions: boolean
+  interfaceAnimations: boolean
   reduceMotion: boolean
   hardwareAcceleration: boolean
   byteUnitSystem: ByteUnitPreference

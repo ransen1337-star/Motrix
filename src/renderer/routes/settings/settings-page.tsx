@@ -1,4 +1,5 @@
 import { PanelShell } from '@renderer/components/desktop-kit/panel/panel-shell'
+import { useInterfaceAnimationsEnabled } from '@renderer/lib/interface-animations'
 import { transport } from '@renderer/lib/transport'
 import { cn } from '@renderer/lib/utils'
 import { useEffect, useState } from 'react'
@@ -11,6 +12,7 @@ export function SettingsPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
+  const interfaceAnimationsEnabled = useInterfaceAnimationsEnabled()
   const visible = /^\/settings(?:\/|$)/.test(location.pathname)
   const { cardId } = useParams<{ cardId: string }>()
   const activeCard = findCard(cardId)
@@ -19,7 +21,9 @@ export function SettingsPage() {
     Math.floor((SETTINGS_CARDS.length - 1) / columns) * columns
 
   const closeDialog = () => {
-    if (cardId) setClosingCardId(cardId)
+    if (!cardId) return
+    if (interfaceAnimationsEnabled) setClosingCardId(cardId)
+    else navigate('/settings')
   }
   const finishClose = () => {
     if (location.pathname.startsWith('/settings/')) navigate('/settings')
@@ -27,6 +31,9 @@ export function SettingsPage() {
   useEffect(() => {
     if (!cardId) setClosingCardId(null)
   }, [cardId])
+  useEffect(() => {
+    if (closingCardId && !interfaceAnimationsEnabled) navigate('/settings')
+  }, [closingCardId, interfaceAnimationsEnabled, navigate])
 
   return (
     <PanelShell

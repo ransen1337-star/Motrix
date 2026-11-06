@@ -61,7 +61,7 @@ type AppearanceFields = Pick<
   MotrixAppSettings,
   | 'theme'
   | 'sidebarColor'
-  | 'pageTransitions'
+  | 'interfaceAnimations'
   | 'reduceMotion'
   | 'hardwareAcceleration'
   | 'language'
@@ -78,7 +78,7 @@ type AppearanceFields = Pick<
 const DEFAULTS: AppearanceFields = {
   theme: DEFAULT_APP_SETTINGS.theme,
   sidebarColor: DEFAULT_APP_SETTINGS.sidebarColor,
-  pageTransitions: DEFAULT_APP_SETTINGS.pageTransitions,
+  interfaceAnimations: DEFAULT_APP_SETTINGS.interfaceAnimations,
   reduceMotion: DEFAULT_APP_SETTINGS.reduceMotion,
   hardwareAcceleration: DEFAULT_APP_SETTINGS.hardwareAcceleration,
   language: DEFAULT_APP_SETTINGS.language,
@@ -116,7 +116,8 @@ export function AppearanceDialog({
       form.reset({
         theme: all.app.theme,
         sidebarColor: all.app.sidebarColor ?? DEFAULTS.sidebarColor,
-        pageTransitions: all.app.pageTransitions ?? DEFAULTS.pageTransitions,
+        interfaceAnimations:
+          all.app.interfaceAnimations ?? DEFAULTS.interfaceAnimations,
         reduceMotion: all.app.reduceMotion ?? DEFAULTS.reduceMotion,
         hardwareAcceleration:
           all.app.hardwareAcceleration ?? DEFAULTS.hardwareAcceleration,
@@ -318,15 +319,15 @@ export function AppearanceDialog({
                     />
                     <FormField
                       control={form.control}
-                      name="pageTransitions"
+                      name="interfaceAnimations"
                       render={({ field }) => (
                         <SettingsFormRow>
                           <div className="space-y-1">
                             <FormLabel>
-                              {t('settings.appearance.pageTransitions')}
+                              {t('settings.appearance.interfaceAnimations')}
                             </FormLabel>
                             <FormDescription className="text-xs">
-                              {t('settings.appearance.pageTransitionsDesc')}
+                              {t('settings.appearance.interfaceAnimationsDesc')}
                             </FormDescription>
                           </div>
                           <FormControl>

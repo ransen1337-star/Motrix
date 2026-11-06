@@ -39,7 +39,7 @@ export const appSettingsSchema = z.object({
   mainWindowMinHeight: windowMinimumDimensionSchema.catch(672),
   theme: z.enum(['system', 'light', 'dark']).catch('system'),
   sidebarColor: sidebarColorSchema.catch('cyan'),
-  pageTransitions: z.boolean().catch(true),
+  interfaceAnimations: z.boolean().catch(true),
   reduceMotion: z.boolean().catch(false),
   hardwareAcceleration: z.boolean().catch(true),
   language: languagePreferenceSchema.catch('system'),
