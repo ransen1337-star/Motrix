@@ -167,7 +167,7 @@ export function AppLayout() {
           <AppSidebar />
           <SidebarInset
             className={cn(
-              'min-h-0 overflow-hidden bg-sidebar-inset',
+              'min-h-0 overflow-hidden bg-sidebar-inset transition-[background-color,box-shadow] duration-200 ease-out motion-reduce:transition-none',
               // Keep the inset card look below the md breakpoint too —
               // upstream gates these behind md:peer-data-[variant=inset]:,
               // which stops matching once the sidebar renders as a Sheet.

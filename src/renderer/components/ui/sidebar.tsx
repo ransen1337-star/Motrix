@@ -509,7 +509,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<'li'>) {
 }
 
 const sidebarMenuButtonVariants = cva(
-  'peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md text-start text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pe-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-active active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-active data-[active=true]:hover:bg-sidebar-active data-[active=true]:text-sidebar-accent-foreground data-popup-open:hover:bg-sidebar-accent data-popup-open:hover:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
+  'peer/menu-button relative isolate flex w-full items-center gap-2 overflow-hidden rounded-md text-start text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding,background-color,color] duration-200 ease-out group-has-data-[sidebar=menu-action]/menu-item:pe-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-transparent data-[active=true]:hover:bg-transparent data-[active=true]:text-sidebar-accent-foreground data-popup-open:hover:bg-sidebar-accent data-popup-open:hover:text-sidebar-accent-foreground motion-reduce:transition-none [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0',
   {
     variants: {
       variant: {
@@ -544,6 +544,7 @@ function SidebarMenuButton({
   tooltip?: string | React.ComponentProps<typeof TooltipContent>
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar()
+  const { children, ...buttonProps } = props
 
   const button = useRender({
     defaultTagName: 'button',
@@ -556,8 +557,20 @@ function SidebarMenuButton({
         'data-size': size,
         'data-active': isActive,
         className: cn(sidebarMenuButtonVariants({ variant, size }), className),
+        children: (
+          <>
+            {isActive && (
+              <span
+                aria-hidden="true"
+                data-slot="sidebar-menu-button-active"
+                className="pointer-events-none absolute inset-0 -z-10 rounded-[inherit] bg-sidebar-active [view-transition-name:sidebar-active]"
+              />
+            )}
+            {children}
+          </>
+        ),
       } as React.ComponentProps<'button'>,
-      props
+      buttonProps
     ),
   })
 

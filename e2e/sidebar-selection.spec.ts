@@ -9,6 +9,27 @@ const destinations = [
   'Settings',
 ]
 
+test('inactive sidebar hover shade fades in and out', async ({
+  mainWindow,
+}) => {
+  const link = mainWindow.getByRole('link', {
+    name: 'Downloads',
+    exact: true,
+  })
+  const button = link.locator('[data-sidebar="menu-button"]')
+  const backgroundAlpha = () =>
+    button.evaluate((element) =>
+      Number(getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.[3])
+    )
+
+  await mainWindow.mouse.move(500, 45)
+  await expect.poll(backgroundAlpha).toBe(0)
+  await link.hover()
+  await expect.poll(backgroundAlpha).toBeGreaterThan(0)
+  await mainWindow.mouse.move(500, 45)
+  await expect.poll(backgroundAlpha).toBe(0)
+})
+
 for (const platform of ['win32', 'linux', 'darwin']) {
   test(`sidebar selection remains distinct across the gradient (${platform} CSS)`, async ({
     mainWindow,
@@ -48,7 +69,10 @@ for (const platform of ['win32', 'linux', 'darwin']) {
           await link.click()
           await mainWindow.mouse.move(500, 45)
           await expect(button).toHaveAttribute('data-active', 'true')
-          const background = await button.evaluate(
+          const activeLayer = button.locator(
+            '[data-slot="sidebar-menu-button-active"]'
+          )
+          const background = await activeLayer.evaluate(
             (element) => getComputedStyle(element).backgroundColor
           )
           const channels = background.match(/[\d.]+/g)?.map(Number)
@@ -64,15 +88,28 @@ for (const platform of ['win32', 'linux', 'darwin']) {
 
           // Hovering a selected item must not replace the selected fill.
           await link.hover()
-          await expect(button).toHaveCSS('background-color', background)
+          await expect(activeLayer).toHaveCSS('background-color', background)
+          await expect(button).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)')
           const other = mainWindow.getByRole('link', {
             name: destination === 'Dashboard' ? 'Settings' : 'Dashboard',
             exact: true,
           })
           await other.hover()
-          const hoverBackground = await other
-            .locator('[data-sidebar="menu-button"]')
-            .evaluate((element) => getComputedStyle(element).backgroundColor)
+          const otherButton = other.locator('[data-sidebar="menu-button"]')
+          await expect
+            .poll(() =>
+              otherButton.evaluate((element) =>
+                Number(
+                  getComputedStyle(element).backgroundColor.match(
+                    /[\d.]+/g
+                  )?.[3]
+                )
+              )
+            )
+            .toBeGreaterThan(0)
+          const hoverBackground = await otherButton.evaluate(
+            (element) => getComputedStyle(element).backgroundColor
+          )
           const hoverAlpha = Number(hoverBackground.match(/[\d.]+/g)?.[3])
           expect(hoverAlpha).toBeGreaterThan(0)
           expect(hoverAlpha).toBeLessThan(alpha)

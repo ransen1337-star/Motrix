@@ -606,6 +606,17 @@ body.is-dashboard-resizing * {
   opacity: 1;
 }
 
+::view-transition-group(sidebar-active) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(sidebar-active),
+::view-transition-new(sidebar-active) {
+  animation-duration: 160ms;
+  animation-timing-function: ease-out;
+}
+
 ::view-transition-group(.page-transition-down),
 ::view-transition-group(.page-transition-up),
 ::view-transition-group(.page-transition-none) {
