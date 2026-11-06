@@ -1,7 +1,7 @@
 import { PanelShell } from '@renderer/components/desktop-kit/panel/panel-shell'
 import { transport } from '@renderer/lib/transport'
 import { cn } from '@renderer/lib/utils'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useParams } from 'react-router'
 import { findCard, SETTINGS_CARDS } from './card-registry'
@@ -22,9 +22,11 @@ export function SettingsPage() {
     if (cardId) setClosingCardId(cardId)
   }
   const finishClose = () => {
-    setClosingCardId(null)
     if (location.pathname.startsWith('/settings/')) navigate('/settings')
   }
+  useEffect(() => {
+    if (!cardId) setClosingCardId(null)
+  }, [cardId])
 
   return (
     <PanelShell

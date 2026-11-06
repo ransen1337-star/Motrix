@@ -158,10 +158,35 @@ test('settings dialog does not inherit a page transition snapshot', async ({
         sample()
       })
   )
+  const closeSequence = mainWindow.evaluate(
+    () =>
+      new Promise<boolean>((resolve) => {
+        let sawClosing = false
+        const deadline = performance.now() + 700
+        const sample = () => {
+          const dialog = document.querySelector<HTMLElement>(
+            '[data-slot="dialog-content"]'
+          )
+          if (!dialog) {
+            resolve(sawClosing)
+            return
+          }
+          if (dialog.hasAttribute('data-closed')) sawClosing = true
+          else if (sawClosing) {
+            resolve(false)
+            return
+          }
+          if (performance.now() >= deadline) resolve(true)
+          else requestAnimationFrame(sample)
+        }
+        sample()
+      })
+  )
   await mainWindow.keyboard.press('Escape')
   const close = await closeAnimation
   expect(close.closing).toBe(true)
   expect(close.animations).toBeGreaterThan(0)
+  expect(await closeSequence).toBe(true)
   await expect(
     mainWindow.getByRole('dialog', { name: 'General' })
   ).not.toBeVisible()
